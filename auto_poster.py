@@ -1,6 +1,10 @@
 """
 完全自動AI投稿システム - 自動投稿モジュール
+
 """
++import os
++from dotenv import load_dotenv
++load_dotenv()
 import requests
 from bs4 import BeautifulSoup
 import time
