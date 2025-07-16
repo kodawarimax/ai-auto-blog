@@ -50,11 +50,13 @@ except ImportError:
                 }
             except Exception as e:
                 # フォールバックテキストを返す
-                return {
-                    'title': article['title'][:50],
+                            return {
+                     'title': article['title'][:50],
                     'content': (
-                        f"{article['title']}\n\n{article['summary']}\n\n"
-                        "AI技術の発展により、私たちの生活がより便利になることが期待されています。"
-                    )[:max_length],
-                    'hashtags': '#AI #人工知能 #テクノロジー',
-                }
+                         f"{article['title']}\n\n{article['summary']}\n\n"
+                       "AI技術の発展により、私たちの生活がより便利になることが期待されています。"
+                   )[:max_length],
+                   'hashtags': '#AI #人工知能 #テクノロジー',
+                     'source_url': article['url'],
+                  'generated_at': datetime.now().isoformat(),
+                 }
