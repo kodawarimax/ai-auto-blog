@@ -1,1 +1,51 @@
+name: AI自動投稿システム
+
+on:
+  schedule:
+    # 毎日午前9時（UTC 0時）に実行
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+    # 手動実行も可能
+
+jobs:
+  auto-post:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: リポジトリをチェックアウト
+      uses: actions/checkout@v4
+    
+    - name: Python環境をセットアップ
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    
+    - name: 依存関係をインストール
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+    
+    - name: 完全自動投稿を実行
+      env:
+        GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+        SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+        BLOG_URL: ${{ secrets.BLOG_URL }}
+        BLOG_USERNAME: ${{ secrets.BLOG_USERNAME }}
+        BLOG_PASSWORD: ${{ secrets.BLOG_PASSWORD }}
+        MAX_CONTENT_LENGTH: 500
+      run: |
+        python main.py auto
+    
+    - name: システム状態を確認
+      env:
+        GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+        SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+        BLOG_URL: ${{ secrets.BLOG_URL }}
+        BLOG_USERNAME: ${{ secrets.BLOG_USERNAME }}
+        BLOG_PASSWORD: ${{ secrets.BLOG_PASSWORD }}
+      run: |
+        python main.py dashboard
+
 
