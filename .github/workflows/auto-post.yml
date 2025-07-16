@@ -2,10 +2,31 @@ name: AI自動投稿システム
 
 on:
   schedule:
-    # 毎日午前9時（UTC 0時）に実行
-    - cron: '0 0 * * *'
+    # 毎日午前7時30分（JST）に実行 = UTC 22:30（前日）
+    - cron: '30 22 * * *'
+    # 毎日午後7時30分（JST）に実行 = UTC 10:30
+    - cron: '30 10 * * *'
   workflow_dispatch:
-    # 手動実行も可能
+    inputs:
+      execution_time:
+        type: choice
+        required: true
+        description: '実行時間を選択'
+        default: 'morning'
+        options:
+          - 'morning'
+          - 'evening'
+          - 'both'
+      custom_time:
+        type: string
+        required: false
+        description: 'カスタム時間 (HH:MM JST形式)'
+        default: '09:00'
+      enable_system_check:
+        type: boolean
+        required: false
+        description: 'システム状態確認を実行する'
+        default: true
 
 jobs:
   auto-post:
@@ -34,10 +55,13 @@ jobs:
         BLOG_USERNAME: ${{ secrets.BLOG_USERNAME }}
         BLOG_PASSWORD: ${{ secrets.BLOG_PASSWORD }}
         MAX_CONTENT_LENGTH: 500
+        EXECUTION_TIME: ${{ github.event.inputs.execution_time || 'scheduled' }}
+        CUSTOM_TIME: ${{ github.event.inputs.custom_time || '' }}
       run: |
         python main.py auto
     
     - name: システム状態を確認
+      if: ${{ github.event.inputs.enable_system_check != 'false' }}
       env:
         GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
@@ -47,5 +71,3 @@ jobs:
         BLOG_PASSWORD: ${{ secrets.BLOG_PASSWORD }}
       run: |
         python main.py dashboard
-
-
